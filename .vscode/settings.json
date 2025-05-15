@@ -1,0 +1,23 @@
+{
+    "[css]": {
+        "editor.formatOnSave": false
+    },
+    "clangd.arguments": [
+        "--header-insertion=never",
+        "--clang-tidy",
+        "--fallback-style=WebKit",
+        "--compile-commands-dir=i:/workspace/learningRL/build-relwithdbg",
+    ],
+    "cmake.cmakePath": "D:\\cmake\\bin\\cmake.exe",
+    "cmake.configureArgs": [
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        // "-DCMAKE_TOOLCHAIN_FILE=D:/Install/BuildTools/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    ],
+    "cmake.debugConfig": {
+        "sourceFileMap": {
+            "c:\\Users\\qt\\work\\qt": "D:\\Qt6\\6.8.2\\Src"
+        },
+        "visualizerFile": "i:/workspace/TVFlowEditor/.vscode/qt6.natvis",
+        "displayString": true
+    }
+}

@@ -1,0 +1,96 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "common-linux",
+            "hidden": true,
+            "generator": "Ninja",
+            "condition": {
+                "type": "inList",
+                "string": "${hostSystemName}",
+                "list": [
+                    "Linux",
+                    "Darwin"
+                ]
+            },
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "common-msvc",
+            "hidden": true,
+            "generator": "Ninja",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-clang-x64"
+                }
+            }
+        },
+        {
+            "name": "common-release",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build-rel",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install-rel",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "common-relwithdbg",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build-relwithdbg",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install-rel",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "ninja-linux-release",
+            "inherits": [
+                "common-linux",
+                "common-release"
+            ],
+            "displayName": "Ninja GCC Release"
+        },
+        {
+            "name": "ninja-linux-relwithdebinfo",
+            "inherits": [
+                "common-linux",
+                "common-relwithdbg"
+            ],
+            "displayName": "Ninja GCC RelWithDebInfo"
+        },
+        {
+            "name": "ninja-msvc-release",
+            "inherits": [
+                "common-msvc",
+                "common-release"
+            ],
+            "displayName": "Ninja MSVC Release"
+        },
+        {
+            "name": "ninja-msvc-relwithdebinfo",
+            "inherits": [
+                "common-msvc",
+                "common-relwithdbg"
+            ],
+            "displayName": "Ninja MSVC RelWithDebInfo"
+        }
+    ]
+}
