@@ -1,0 +1,7 @@
+**/.cache
+**/build
+**/build-*
+**/install
+**/install-*
+**/.vscode
+**/private
