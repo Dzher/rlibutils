@@ -1,5 +1,6 @@
 #pragma once
 
+#include "data.h"
 #include <rl/mdl/Model.h>
 #include <string>
 
@@ -12,5 +13,8 @@ public:
     // load model form file
     static rl::mdl::Model* getModelFromUrdf(const ::std::string& model_file_path);
     static rl::mdl::Model* getModelFromXml(const ::std::string& model_file_path);
+
+    static rl::math::Transform transformPos2RlTransfrom(const TransformPos& in);
+    static TransformPos rlTransform2TransfromPos(const rl::math::Transform& in);
 };
 }

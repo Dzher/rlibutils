@@ -1,9 +1,11 @@
 #include "motioner.h"
-#include "model_utils.h"
+#include "utils.h"
 #include <iostream>
 #include <rl/math/Transform.h>
+#include <rl/mdl/JacobianInverseKinematics.h>
 #include <rl/mdl/Kinematic.h>
 #include <rl/mdl/Model.h>
+#include <rl/mdl/NloptInverseKinematics.h>
 
 using namespace roblib;
 
@@ -22,10 +24,10 @@ int Motioner::getDof()
     return d_->model->getDof();
 }
 
-void Motioner::getPositonByDegree(const std::vector<double>& joint_degrees)
+std::optional<TransformPos> Motioner::getPositonByDegree(const std::vector<double>& joint_degrees)
 {
     if (joint_degrees.size() != getDof()) {
-        return;
+        return std::nullopt;
     }
 
     rl::math::Vector position;
@@ -37,13 +39,20 @@ void Motioner::getPositonByDegree(const std::vector<double>& joint_degrees)
     kin_model->forwardPosition();
 
     rl::math::Transform endless_pos = kin_model->getOperationalPosition(0);
-    std::cout << endless_pos.translation().transpose() << std::endl;
+
+    TransformPos res;
+    const auto& t = endless_pos.translation();
+    res.translation = { t.x(), t.y(), t.z() };
+
+    Eigen::Quaterniond q(endless_pos.linear());
+    res.rotation = { q.w(), q.x(), q.y(), q.z() };
+    return res;
 }
 
-void Motioner::getPositonByRadian(const std::vector<double>& joint_radians)
+std::optional<TransformPos> Motioner::getPositonByRadian(const std::vector<double>& joint_radians)
 {
     if (joint_radians.size() != getDof()) {
-        return;
+        return std::nullopt;
     }
 
     rl::math::Vector position;
@@ -55,5 +64,25 @@ void Motioner::getPositonByRadian(const std::vector<double>& joint_radians)
     kin_model->forwardPosition();
 
     rl::math::Transform endless_pos = kin_model->getOperationalPosition(0);
-    std::cout << endless_pos.translation().transpose() << std::endl;
+
+    return ModelUtils::rlTransform2TransfromPos(endless_pos);
 }
+
+std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& target)
+{
+    auto trans = ModelUtils::transformPos2RlTransfrom(target);
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+
+    rl::mdl::JacobianInverseKinematics ik(kin_model);
+    // ik.addGoal(target);
+
+    bool result = ik.solve();
+
+    // kin_model->forwardPosition();
+    // position = kin_model->getOperationalPosition(0).translation();
+    // orientation = kin_model->getOperationalPosition(0).rotation().eulerAngles(2, 1, 0).reverse();
+
+    std::cout << "q: " << kin_model->getPosition().transpose() << std::endl;
+}
+
+std::vector<double> Motioner::getRadiansByTransfromPos(const TransformPos& target) { }

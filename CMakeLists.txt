@@ -8,8 +8,8 @@ add_definitions(-D_USE_MATH_DEFINES)
 find_package(RL COMPONENTS MDL KIN MATH REQUIRED)
 
 set(LIB_SOURCES
-    model_utils.h
-    model_utils.cpp
+    utils.h
+    utils.cpp
     motioner.h
     motioner.cpp
     roboticslib_utils.h
