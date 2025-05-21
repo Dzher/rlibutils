@@ -19,19 +19,36 @@ Motioner::Motioner(const std::string& model_file_path)
     d_->model = ModelUtils::isUrdfFile(model_file_path) ? ModelUtils::getModelFromUrdf(model_file_path) : ModelUtils::getModelFromXml(model_file_path);
 }
 
+Motioner::~Motioner()
+{
+    delete d_->model;
+    delete d_;
+}
+
 int Motioner::getDof()
 {
     return d_->model->getDof();
 }
 
-TransformPos Motioner::getEndlessPosition()
+TransformPos Motioner::getEndEffectorPos()
 {
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
     rl::math::Transform endless_pos = kin_model->getOperationalPosition(0);
     return ModelUtils::rlTransform2TransfromPos(endless_pos);
 }
 
-std::optional<TransformPos> Motioner::getPositonByDegree(const std::vector<double>& joint_degrees)
+std::vector<double> Motioner::getJointDegree()
+{
+    std::vector<double> res;
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+
+    for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+        res.push_back(kin_model->getPosition()[i]);
+    }
+    return res;
+}
+
+std::optional<TransformPos> Motioner::getEndEffectorPosByDegree(const std::vector<double>& joint_degrees)
 {
     if (joint_degrees.size() != getDof()) {
         return std::nullopt;
@@ -56,7 +73,7 @@ std::optional<TransformPos> Motioner::getPositonByDegree(const std::vector<doubl
     return res;
 }
 
-std::optional<TransformPos> Motioner::getPositonByRadian(const std::vector<double>& joint_radians)
+std::optional<TransformPos> Motioner::getEndEffectorPosByRadian(const std::vector<double>& joint_radians)
 {
     if (joint_radians.size() != getDof()) {
         return std::nullopt;
@@ -83,13 +100,14 @@ std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& targe
     rl::mdl::JacobianInverseKinematics ik(kin_model);
     ik.goals.push_back({ trans, 0 });
 
+    std::vector<double> res;
+
     if (ik.solve()) {
         std::cout << "q: " << kin_model->getPosition().transpose() << std::endl;
-    }
 
-    std::vector<double> res;
-    for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-        res.push_back(kin_model->getPosition()[i]);
+        for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+            res.push_back(kin_model->getPosition()[i]);
+        }
     }
     return res;
 
