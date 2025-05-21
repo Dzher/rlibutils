@@ -24,13 +24,20 @@ int Motioner::getDof()
     return d_->model->getDof();
 }
 
+TransformPos Motioner::getEndlessPosition()
+{
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+    rl::math::Transform endless_pos = kin_model->getOperationalPosition(0);
+    return ModelUtils::rlTransform2TransfromPos(endless_pos);
+}
+
 std::optional<TransformPos> Motioner::getPositonByDegree(const std::vector<double>& joint_degrees)
 {
     if (joint_degrees.size() != getDof()) {
         return std::nullopt;
     }
 
-    rl::math::Vector position;
+    rl::math::Vector position { getDof() };
     for (auto& each_degree : joint_degrees) {
         position << each_degree * rl::math::RAD2DEG;
     }
@@ -55,7 +62,7 @@ std::optional<TransformPos> Motioner::getPositonByRadian(const std::vector<doubl
         return std::nullopt;
     }
 
-    rl::math::Vector position;
+    rl::math::Vector position { getDof() };
     for (auto& each_degree : joint_radians) {
         position << each_degree;
     }
@@ -74,15 +81,21 @@ std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& targe
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
     rl::mdl::JacobianInverseKinematics ik(kin_model);
-    // ik.addGoal(target);
+    ik.goals.push_back({ trans, 0 });
 
-    bool result = ik.solve();
+    if (ik.solve()) {
+        std::cout << "q: " << kin_model->getPosition().transpose() << std::endl;
+    }
+
+    std::vector<double> res;
+    for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+        res.push_back(kin_model->getPosition()[i]);
+    }
+    return res;
 
     // kin_model->forwardPosition();
     // position = kin_model->getOperationalPosition(0).translation();
     // orientation = kin_model->getOperationalPosition(0).rotation().eulerAngles(2, 1, 0).reverse();
-
-    std::cout << "q: " << kin_model->getPosition().transpose() << std::endl;
 }
 
-std::vector<double> Motioner::getRadiansByTransfromPos(const TransformPos& target) { }
+// std::vector<double> Motioner::getRadiansByTransfromPos(const TransformPos& target) { }
