@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <iostream>
 
-void test_get_current_endpos(roblib::Motioner& motioner)
+void test_get_current_endpos(const roblib::Motioner& motioner)
 {
     auto endless_trans = motioner.getEndEffectorPos();
     std::cout << "translation: " << std::endl;
@@ -20,7 +20,7 @@ void test_get_current_endpos(roblib::Motioner& motioner)
     std::cout << std::endl;
 }
 
-void test_get_current_joint_degree(roblib::Motioner& motioner)
+void test_get_current_joint_degree(const roblib::Motioner& motioner)
 {
     auto joint_degrees = motioner.getJointDegree();
     std::cout << "model joint degrees: " << std::endl;
@@ -30,7 +30,7 @@ void test_get_current_joint_degree(roblib::Motioner& motioner)
     std::cout << std::endl;
 }
 
-void test_forward(roblib::Motioner& motioner, const std::vector<double>& pos)
+void test_forward(const roblib::Motioner& motioner, const std::vector<double>& pos)
 {
     auto res = motioner.getEndEffectorPosByDegree(pos);
     if (res.has_value()) {
@@ -51,7 +51,7 @@ void test_forward(roblib::Motioner& motioner, const std::vector<double>& pos)
     std::cout << "error_occur" << std::endl;
 }
 
-void test_inverse(roblib::Motioner& motioner, const roblib::TransformPos& transpos)
+void test_inverse(const roblib::Motioner& motioner, const roblib::TransformPos& transpos)
 {
     motioner.getDegreesByTransfromPos(transpos);
 }
@@ -60,6 +60,7 @@ int main()
 {
     roblib::Motioner motioner("../../tests/xMateCR7.urdf");
     std::cout << "Dof: " << motioner.getDof() << std::endl;
+    std::cout << "Operation Dof: " << motioner.getOperationDof() << std::endl;
     std::cout << std::fixed << std::setprecision(3);
 
     // test get model infos
