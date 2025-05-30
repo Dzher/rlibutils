@@ -68,7 +68,7 @@ std::optional<TransformPos> Motioner::getEndEffectorPosByDegree(const std::vecto
 
     rl::math::Vector position { getDof() };
     for (int i = 0; i < position.size(); ++i) {
-        position[i] = joint_degrees[i];
+        position[i] = joint_degrees[i] * rl::math::DEG2RAD;
     }
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
     kin_model->setPosition(position);
@@ -87,7 +87,7 @@ std::optional<TransformPos> Motioner::getEndEffectorPosByRadian(const std::vecto
 
     rl::math::Vector position { getDof() };
     for (int i = 0; i < position.size(); ++i) {
-        position[i] = joint_radians[i] * rl::math::RAD2DEG;
+        position[i] = joint_radians[i];
     }
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
     kin_model->setPosition(position);

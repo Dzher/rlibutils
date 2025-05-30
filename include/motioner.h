@@ -1,5 +1,15 @@
 #pragma once
 
+#ifdef _WIN32
+#ifdef R_LIB_UTILS_EXPORTS
+#define RLIB_API __declspec(dllexport)
+#else
+#define RLIB_API __declspec(dllimport)
+#endif
+#else
+#define RLIB_API
+#endif
+
 #include "data.h"
 #include <optional>
 #include <string>
@@ -9,7 +19,7 @@ namespace roblib {
 
 struct MotionerPrivate;
 
-class Motioner {
+class RLIB_API Motioner {
 public:
     explicit Motioner(const std::string& model_file_path);
     Motioner(const Motioner& other);

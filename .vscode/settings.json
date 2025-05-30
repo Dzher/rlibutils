@@ -6,7 +6,7 @@
         "--header-insertion=never",
         "--clang-tidy",
         "--fallback-style=WebKit",
-        "--compile-commands-dir=i:/workspace/RoboticLibUtils/build-relwithdbg",
+        "--compile-commands-dir=i:/workspace/rlibutils/build-relwithdbg",
     ],
     "cmake.cmakePath": "D:\\cmake\\bin\\cmake.exe",
     "cmake.configureArgs": [

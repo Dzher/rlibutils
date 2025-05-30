@@ -1,9 +1,19 @@
 #pragma once
 
+#ifdef _WIN32
+#ifdef R_LIB_UTILS_EXPORTS
+#define RLIB_API __declspec(dllexport)
+#else
+#define RLIB_API __declspec(dllimport)
+#endif
+#else
+#define RLIB_API
+#endif
+
 #include <array>
 
 namespace roblib {
-struct TransformPos {
+struct RLIB_API TransformPos {
     TransformPos()
     {
         x = 0.0;
@@ -14,6 +24,7 @@ struct TransformPos {
         q3 = 0.0;
         q4 = 0.0;
     }
+
     TransformPos(const std::array<double, 3>& pos,
         const std::array<double, 4>& quat)
         : translation(pos)

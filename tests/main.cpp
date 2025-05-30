@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../source/motioner.h"
+#include "motioner.h"
 #include <iomanip>
 #include <iostream>
 
@@ -68,8 +68,8 @@ int main()
     test_get_current_joint_degree(motioner);
 
     // test forward operations
+    test_forward(motioner, { 5., 5., 0., 0., 0., 0. });
     test_forward(motioner, { 0., 0., 0., 0., 0., 0. });
-    test_forward(motioner, { 5., 0., 0., 0., 0., 0. });
 
     // test inverse operations
     test_inverse(motioner, roblib::TransformPos().identity());
