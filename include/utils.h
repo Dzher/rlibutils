@@ -24,7 +24,13 @@ public:
     static rl::mdl::Model* getModelFromUrdf(const ::std::string& model_file_path);
     static rl::mdl::Model* getModelFromXml(const ::std::string& model_file_path);
 
-    static rl::math::Transform transformPos2RlTransfrom(const TransformPos& in);
-    static TransformPos rlTransform2TransfromPos(const rl::math::Transform& in);
+    static rl::math::Transform xyzQuat2RlTransfrom(const xyzWithQuaternion& in);
+    static xyzWithQuaternion rlTransform2XyzQuat(const rl::math::Transform& in);
+
+    static rl::math::Transform xyzEuler2RlTransfrom(const xyzWithEuler& in);
+    static xyzWithEuler rlTransform2XyzEuler(const rl::math::Transform& in);
+
+    static Euler quaternion2Euler(const Quaternion& quat);
+    static Quaternion euler2Quaternion(const Euler& euler);
 };
 }

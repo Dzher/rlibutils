@@ -1,6 +1,5 @@
 #include "motioner.h"
 #include "utils.h"
-#include <iostream>
 #include <rl/math/Transform.h>
 #include <rl/mdl/JacobianInverseKinematics.h>
 #include <rl/mdl/Kinematic.h>
@@ -42,11 +41,18 @@ int Motioner::getOperationDof() const
     return d_->model->getOperationalDof();
 }
 
-TransformPos Motioner::getEndEffectorPos() const
+xyzWithQuaternion Motioner::getEndEffectorQuatPos() const
 {
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
     rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
-    return ModelUtils::rlTransform2TransfromPos(end_effector_pos);
+    return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
+}
+
+xyzWithEuler Motioner::getEndEffectorEulerPos() const
+{
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+    rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
+    return ModelUtils::rlTransform2XyzEuler(end_effector_pos);
 }
 
 std::vector<double> Motioner::getJointDegree() const
@@ -60,7 +66,7 @@ std::vector<double> Motioner::getJointDegree() const
     return res;
 }
 
-std::optional<TransformPos> Motioner::getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const
+std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const
 {
     if (joint_degrees.size() != getDof()) {
         return std::nullopt;
@@ -76,10 +82,10 @@ std::optional<TransformPos> Motioner::getEndEffectorPosByDegree(const std::vecto
 
     rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
 
-    return ModelUtils::rlTransform2TransfromPos(end_effector_pos);
+    return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
 }
 
-std::optional<TransformPos> Motioner::getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const
+std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const
 {
     if (joint_radians.size() != getDof()) {
         return std::nullopt;
@@ -95,12 +101,12 @@ std::optional<TransformPos> Motioner::getEndEffectorPosByRadian(const std::vecto
 
     rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
 
-    return ModelUtils::rlTransform2TransfromPos(end_effector_pos);
+    return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
 }
 
-std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& target) const
+std::vector<double> Motioner::getDegreesByTXyzQuat(const xyzWithQuaternion& target) const
 {
-    auto trans = ModelUtils::transformPos2RlTransfrom(target);
+    auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
     rl::mdl::JacobianInverseKinematics ik(kin_model);
@@ -114,10 +120,58 @@ std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& targe
         }
     }
     return res;
-
-    // kin_model->forwardPosition();
-    // position = kin_model->getOperationalPosition(0).translation();
-    // orientation = kin_model->getOperationalPosition(0).rotation().eulerAngles(2, 1, 0).reverse();
 }
 
-// std::vector<double> Motioner::getRadiansByTransfromPos(const TransformPos& target) { }
+std::vector<double> Motioner::getRadiansByTXyzQuat(const xyzWithQuaternion& target) const
+{
+    auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+
+    rl::mdl::JacobianInverseKinematics ik(kin_model);
+    ik.goals.push_back({ trans, 0 });
+
+    std::vector<double> res;
+
+    if (ik.solve()) {
+        for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+            res.push_back(kin_model->getPosition()[i]);
+        }
+    }
+    return res;
+}
+
+std::vector<double> Motioner::getDegreesByXyzEuler(const xyzWithEuler& target) const
+{
+    auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+
+    rl::mdl::JacobianInverseKinematics ik(kin_model);
+    ik.goals.push_back({ trans, 0 });
+
+    std::vector<double> res;
+
+    if (ik.solve()) {
+        for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+            res.push_back(kin_model->getPosition()[i] * rl::math::RAD2DEG);
+        }
+    }
+    return res;
+}
+
+std::vector<double> Motioner::getRadiansByXyzEuler(const xyzWithEuler& target) const
+{
+    auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
+    auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
+
+    rl::mdl::JacobianInverseKinematics ik(kin_model);
+    ik.goals.push_back({ trans, 0 });
+
+    std::vector<double> res;
+
+    if (ik.solve()) {
+        for (int i = 0; i < kin_model->getPosition().size(); ++i) {
+            res.push_back(kin_model->getPosition()[i]);
+        }
+    }
+    return res;
+}

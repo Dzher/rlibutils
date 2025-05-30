@@ -27,15 +27,18 @@ public:
 
     int getDof() const;
     int getOperationDof() const;
-    TransformPos getEndEffectorPos() const;
+    xyzWithQuaternion getEndEffectorQuatPos() const;
+    xyzWithEuler getEndEffectorEulerPos() const;
     std::vector<double> getJointDegree() const;
     // Forward Kinematics
-    std::optional<TransformPos> getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const;
-    std::optional<TransformPos> getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const;
+    std::optional<xyzWithQuaternion> getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const;
+    std::optional<xyzWithQuaternion> getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const;
 
     // Inverse Kinematics
-    std::vector<double> getDegreesByTransfromPos(const TransformPos& target) const;
-    // std::vector<double> getRadiansByTransfromPos(const TransformPos& target);
+    std::vector<double> getDegreesByTXyzQuat(const xyzWithQuaternion& target) const;
+    std::vector<double> getRadiansByTXyzQuat(const xyzWithQuaternion& target) const;
+    std::vector<double> getDegreesByXyzEuler(const xyzWithEuler& target) const;
+    std::vector<double> getRadiansByXyzEuler(const xyzWithEuler& target) const;
 
 private:
     MotionerPrivate* d_ = nullptr;
