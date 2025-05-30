@@ -53,7 +53,11 @@ void test_forward(const roblib::Motioner& motioner, const std::vector<double>& p
 
 void test_inverse(const roblib::Motioner& motioner, const roblib::TransformPos& transpos)
 {
-    motioner.getDegreesByTransfromPos(transpos);
+    auto res = motioner.getDegreesByTransfromPos(transpos);
+    std::cout << "inv" << std::endl;
+    for (auto each : res) {
+        std::cout << each << ", ";
+    }
 }
 
 int main()
@@ -61,7 +65,7 @@ int main()
     roblib::Motioner motioner("../../tests/xMateCR7.urdf");
     std::cout << "Dof: " << motioner.getDof() << std::endl;
     std::cout << "Operation Dof: " << motioner.getOperationDof() << std::endl;
-    std::cout << std::fixed << std::setprecision(3);
+    std::cout << std::fixed << std::setprecision(6);
 
     // test get model infos
     test_get_current_endpos(motioner);
@@ -69,10 +73,15 @@ int main()
 
     // test forward operations
     test_forward(motioner, { 5., 5., 0., 0., 0., 0. });
+
+    // save end position after forward
+    auto end_position = motioner.getEndEffectorPos();
+
+    // reset the robotic end positon
     test_forward(motioner, { 0., 0., 0., 0., 0., 0. });
 
     // test inverse operations
-    test_inverse(motioner, roblib::TransformPos().identity());
+    test_inverse(motioner, end_position);
 
     std::cout.unsetf(std::ios::fixed);
     std::cout << std::setprecision(6);

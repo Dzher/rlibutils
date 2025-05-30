@@ -6,6 +6,36 @@
 
 using namespace roblib;
 
+namespace {
+rl::math::Transform transformPos2RlTransfromImpl1(const TransformPos& in)
+{
+    return rl::math::Transform(
+        Eigen::Translation3d(
+            in.translation[0],
+            in.translation[1],
+            in.translation[2])
+        * Eigen::Quaterniond(
+            in.rotation[0],
+            in.rotation[1],
+            in.rotation[2],
+            in.rotation[3])
+            .normalized());
+}
+
+rl::math::Transform transformPos2RlTransfromImpl2(const TransformPos& in)
+{
+    rl::math::Transform t;
+    rl::math::Quaternion q(in.rotation[0], in.rotation[1], in.rotation[2],
+        in.rotation[3]);
+    q.normalize();
+    t.linear() = q.toRotationMatrix();
+    t.translation().x() = in.translation[0];
+    t.translation().y() = in.translation[1];
+    t.translation().z() = in.translation[2];
+    return t;
+}
+}
+
 rl::mdl::Model* ModelUtils::getModelFromUrdf(const ::std::string& model_file_path)
 {
     rl::mdl::UrdfFactory urdf_factory;
@@ -32,17 +62,8 @@ bool ModelUtils::isXmlFile(const std::string& file_path)
 
 rl::math::Transform ModelUtils::transformPos2RlTransfrom(const TransformPos& in)
 {
-    return rl::math::Transform(
-        Eigen::Translation3d(
-            in.translation[0],
-            in.translation[1],
-            in.translation[2])
-        * Eigen::Quaterniond(
-            in.rotation[0],
-            in.rotation[1],
-            in.rotation[2],
-            in.rotation[3])
-              .normalized());
+    // TODO: which method is better? It's a problem
+    return transformPos2RlTransfromImpl2(in);
 }
 
 TransformPos ModelUtils::rlTransform2TransfromPos(const rl::math::Transform& in)

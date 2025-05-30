@@ -109,10 +109,8 @@ std::vector<double> Motioner::getDegreesByTransfromPos(const TransformPos& targe
     std::vector<double> res;
 
     if (ik.solve()) {
-        std::cout << "q: " << kin_model->getPosition().transpose() << std::endl;
-
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-            res.push_back(kin_model->getPosition()[i]);
+            res.push_back(kin_model->getPosition()[i] * rl::math::RAD2DEG);
         }
     }
     return res;
