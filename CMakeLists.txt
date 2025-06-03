@@ -6,12 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_TESTS "Build test tools" ON)
 
+if(MSVC)
+  add_compile_options(/utf-8)
+endif()
+
 add_definitions(-D_USE_MATH_DEFINES)
 find_package(RL COMPONENTS MDL KIN MATH REQUIRED)
 
 include_directories(
     PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
