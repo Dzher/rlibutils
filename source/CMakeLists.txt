@@ -37,8 +37,9 @@ set(RLIB_ZIP_FILE ${RLIB_OUTPUT_DIR}/rlib.zip)
 
 add_custom_command(
     OUTPUT ${RLIB_ZIP_FILE}
+    WORKING_DIRECTORY ${RLIB_OUTPUT_DIR}
     COMMAND ${CMAKE_COMMAND} -E tar "cf" ${RLIB_ZIP_FILE} --format=zip
-        -- ${RLIB_OUTPUT_DIR}/include ${RLIB_OUTPUT_DIR}/bin ${RLIB_OUTPUT_DIR}/lib
+    include bin lib
     DEPENDS rlibutils
     COMMENT "Creating rlib.zip Archive"
 )
