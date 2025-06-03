@@ -17,5 +17,7 @@ if(WIN32)
 endif()
 
 set_target_properties(rlibutils PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib  # .lib 文件输出位置
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib  # .dll 文件输出位置
+    # LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib  
 )
