@@ -1,0 +1,54 @@
+#pragma once
+
+#include "motioner.h"
+#include <iomanip>
+#include <iostream>
+
+void test_forward(const roblib::Motioner& motioner, const std::vector<double>& pos)
+{
+    auto res = motioner.getEndEffectorPosByDegree(pos);
+    if (res.has_value()) {
+        auto endless_trans = res.value();
+        std::cout << "translation: " << std::endl;
+        for (auto each : endless_trans.position()) {
+            std::cout << each << ", ";
+        }
+        std::cout << std::endl;
+
+        std::cout << "rotation: " << std::endl;
+        for (auto each : endless_trans.rotation()) {
+            std::cout << each << ", ";
+        }
+        std::cout << std::endl;
+        return;
+    }
+    std::cout << "error_occur" << std::endl;
+}
+
+void test_inverse(const roblib::Motioner& motioner, const roblib::xyzWithQuaternion& transpos)
+{
+    auto res = motioner.getDegreesByTXyzQuat(transpos);
+    std::cout << "inv" << std::endl;
+    for (auto each : res) {
+        std::cout << each << ", ";
+    }
+}
+
+int main()
+{
+    roblib::Motioner motioner("../xMateCR7.urdf");
+
+    std::cout << std::fixed << std::setprecision(6);
+
+    // test forward operations
+    test_forward(motioner, { 5., 5., 0., 0., 0., 0. });
+
+    // save end position after forward
+    auto end_position = motioner.getEndEffectorQuatPos();
+
+    // reset the robotic end positon
+    test_forward(motioner, { 0., 0., 0., 0., 0., 0. });
+
+    std::cout.unsetf(std::ios::fixed);
+    std::cout << std::setprecision(6);
+}

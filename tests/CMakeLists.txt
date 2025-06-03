@@ -1,22 +1,9 @@
-set(TARGET_NAME rl_test)
+file(GLOB URDF_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.urdf")
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-add_executable(${TARGET_NAME} 
-    main.cpp
+file(COPY ${URDF_FILES} 
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(${TARGET_NAME}
-    PRIVATE
-    rlibutils
-)
-
-add_custom_command(TARGET rl_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_FILE:rlibutils> 
-        $<TARGET_FILE_DIR:rl_test>
-)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(${TARGET_NAME} PRIVATE "DEBUG")
-endif()
+add_subdirectory(test_base_info)
+add_subdirectory(test_forward)
+add_subdirectory(test_inverse)
