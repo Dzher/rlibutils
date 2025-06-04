@@ -52,7 +52,7 @@ struct RLIB_API xyzWithQuaternion {
     xyzWithQuaternion(const std::array<double, 3>& pos,
         const std::array<double, 4>& quat)
     {
-        positon(pos);
+        position(pos);
         rotation(quat);
     }
 
@@ -62,7 +62,7 @@ struct RLIB_API xyzWithQuaternion {
     }
 
     Pos pos;
-    void positon(std::array<double, 3> xyz)
+    void position(std::array<double, 3> xyz)
     {
         pos.x = xyz[0];
         pos.y = xyz[1];

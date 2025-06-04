@@ -73,7 +73,7 @@ xyzWithQuaternion ModelUtils::rlTransform2XyzQuat(const rl::math::Transform& in)
 {
     xyzWithQuaternion res;
     const auto& t = in.translation();
-    res.positon({ t.x(), t.y(), t.z() });
+    res.position({ t.x(), t.y(), t.z() });
 
     // Eigen::Quaterniond q(in.linear());
     rl::math::Quaternion q(in.linear());

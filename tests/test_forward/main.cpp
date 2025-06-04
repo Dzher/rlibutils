@@ -9,13 +9,7 @@ int main()
 {
     std::cout << std::fixed << std::setprecision(6);
 
-    std::string model_path;
-    std::cout << "Please input model path..." << std::endl;
-    std::getline(std::cin, model_path);
-    if (model_path.empty()) {
-        model_path = "../xMateCR7.urdf";
-    }
-    roblib::Motioner motioner(model_path);
+    auto motioner = loadModel();
     if (!motioner.isValid()) {
         std::cerr << "Model path invalid, process exit!" << std::endl;
         return 1;
