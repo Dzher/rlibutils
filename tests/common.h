@@ -34,7 +34,7 @@ inline void test_inverse(const roblib::Motioner& motioner, const roblib::xyzWith
         std::cout << "Inverse Operation has NO Answer!";
         return;
     }
-    std::cout << "inv" << std::endl;
+    std::cout << "Joint Degrees: " << std::endl;
     for (auto each : res.value()) {
         std::cout << each << " ";
     }
