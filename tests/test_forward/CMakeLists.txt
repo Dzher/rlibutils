@@ -2,8 +2,13 @@ set(TARGET_NAME test_forward)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(${TARGET_NAME} 
+add_executable(${TARGET_NAME}
     main.cpp
+)
+
+target_include_directories(${TARGET_NAME}
+    PRIVATE
+    ../common.h
 )
 
 target_link_libraries(${TARGET_NAME}

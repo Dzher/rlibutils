@@ -31,6 +31,11 @@ Motioner::~Motioner()
     delete d_;
 }
 
+bool Motioner::isValid() const
+{
+    return d_->model != nullptr;
+}
+
 int Motioner::getDof() const
 {
     return d_->model->getDof();
@@ -104,74 +109,94 @@ std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByRadian(const std::
     return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
 }
 
-std::vector<double> Motioner::getDegreesByTXyzQuat(const xyzWithQuaternion& target) const
+std::optional<std::vector<double>> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method) const
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
-    rl::mdl::JacobianInverseKinematics ik(kin_model);
-    ik.goals.push_back({ trans, 0 });
+    std::unique_ptr<rl::mdl::InverseKinematics> ik;
+    if (method == InverseMethod::Jacob) {
+        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model);
+    } else {
+        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model);
+    }
+    ik->goals.push_back({ trans, 0 });
 
-    std::vector<double> res;
-
-    if (ik.solve()) {
+    if (ik->solve()) {
+        std::vector<double> res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::RAD2DEG);
         }
+        return res;
     }
-    return res;
+    return std::nullopt;
 }
 
-std::vector<double> Motioner::getRadiansByTXyzQuat(const xyzWithQuaternion& target) const
+std::optional<std::vector<double>> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method) const
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
-    rl::mdl::JacobianInverseKinematics ik(kin_model);
-    ik.goals.push_back({ trans, 0 });
+    std::unique_ptr<rl::mdl::InverseKinematics> ik;
+    if (method == InverseMethod::Jacob) {
+        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model);
+    } else {
+        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model);
+    }
+    ik->goals.push_back({ trans, 0 });
 
-    std::vector<double> res;
-
-    if (ik.solve()) {
+    if (ik->solve()) {
+        std::vector<double> res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
         }
+        return res;
     }
-    return res;
+    return std::nullopt;
 }
 
-std::vector<double> Motioner::getDegreesByXyzEuler(const xyzWithEuler& target) const
+std::optional<std::vector<double>> Motioner::getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method) const
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
-    rl::mdl::JacobianInverseKinematics ik(kin_model);
-    ik.goals.push_back({ trans, 0 });
+    std::unique_ptr<rl::mdl::InverseKinematics> ik;
+    if (method == InverseMethod::Jacob) {
+        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model);
+    } else {
+        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model);
+    }
+    ik->goals.push_back({ trans, 0 });
 
-    std::vector<double> res;
-
-    if (ik.solve()) {
+    if (ik->solve()) {
+        std::vector<double> res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::RAD2DEG);
         }
+        return res;
     }
-    return res;
+    return std::nullopt;
 }
 
-std::vector<double> Motioner::getRadiansByXyzEuler(const xyzWithEuler& target) const
+std::optional<std::vector<double>> Motioner::getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method) const
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_cast<rl::mdl::Kinematic*>(d_->model);
 
-    rl::mdl::JacobianInverseKinematics ik(kin_model);
-    ik.goals.push_back({ trans, 0 });
+    std::unique_ptr<rl::mdl::InverseKinematics> ik;
+    if (method == InverseMethod::Jacob) {
+        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model);
+    } else {
+        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model);
+    }
+    ik->goals.push_back({ trans, 0 });
 
-    std::vector<double> res;
-
-    if (ik.solve()) {
+    if (ik->solve()) {
+        std::vector<double> res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
         }
+        return res;
     }
-    return res;
+    return std::nullopt;
 }

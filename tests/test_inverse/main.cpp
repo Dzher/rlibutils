@@ -1,38 +1,9 @@
 #pragma once
 
+#include "../common.h"
 #include "motioner.h"
 #include <iomanip>
 #include <iostream>
-
-void test_forward(const roblib::Motioner& motioner, const std::vector<double>& pos)
-{
-    auto res = motioner.getEndEffectorPosByDegree(pos);
-    if (res.has_value()) {
-        auto endless_trans = res.value();
-        std::cout << "translation: " << std::endl;
-        for (auto each : endless_trans.position()) {
-            std::cout << each << ", ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "rotation: " << std::endl;
-        for (auto each : endless_trans.rotation()) {
-            std::cout << each << ", ";
-        }
-        std::cout << std::endl;
-        return;
-    }
-    std::cout << "error_occur" << std::endl;
-}
-
-void test_inverse(const roblib::Motioner& motioner, const roblib::xyzWithQuaternion& transpos)
-{
-    auto res = motioner.getDegreesByTXyzQuat(transpos);
-    std::cout << "inv" << std::endl;
-    for (auto each : res) {
-        std::cout << each << ", ";
-    }
-}
 
 int main()
 {

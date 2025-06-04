@@ -1,53 +1,39 @@
 #pragma once
 
+#include "../common.h"
 #include "motioner.h"
 #include <iomanip>
 #include <iostream>
 
-void test_forward(const roblib::Motioner& motioner, const std::vector<double>& pos)
-{
-    auto res = motioner.getEndEffectorPosByDegree(pos);
-    if (res.has_value()) {
-        auto endless_trans = res.value();
-        std::cout << "translation: " << std::endl;
-        for (auto each : endless_trans.position()) {
-            std::cout << each << ", ";
-        }
-        std::cout << std::endl;
-
-        std::cout << "rotation: " << std::endl;
-        for (auto each : endless_trans.rotation()) {
-            std::cout << each << ", ";
-        }
-        std::cout << std::endl;
-        return;
-    }
-    std::cout << "error_occur" << std::endl;
-}
-
-void test_inverse(const roblib::Motioner& motioner, const roblib::xyzWithQuaternion& transpos)
-{
-    auto res = motioner.getDegreesByTXyzQuat(transpos);
-    std::cout << "inv" << std::endl;
-    for (auto each : res) {
-        std::cout << each << ", ";
-    }
-}
-
 int main()
 {
-    roblib::Motioner motioner("../xMateCR7.urdf");
-
     std::cout << std::fixed << std::setprecision(6);
 
-    // test forward operations
-    test_forward(motioner, { 5., 5., 0., 0., 0., 0. });
+    std::string model_path;
+    std::cout << "Please input model path..." << std::endl;
+    std::getline(std::cin, model_path);
+    if (model_path.empty()) {
+        model_path = "../xMateCR7.urdf";
+    }
+    roblib::Motioner motioner(model_path);
+    if (!motioner.isValid()) {
+        std::cerr << "Model path invalid, process exit!" << std::endl;
+        return 1;
+    }
 
-    // save end position after forward
-    auto end_position = motioner.getEndEffectorQuatPos();
+    std::vector<double> degrees;
 
-    // reset the robotic end positon
-    test_forward(motioner, { 0., 0., 0., 0., 0., 0. });
+    while (true) {
+        std::vector<double> joints = readJoints(motioner.getDof());
+
+        if (joints.empty() || joints.size() != motioner.getDof()) {
+            std::cout << "Process Exit!" << std::endl;
+            break;
+        }
+
+        test_forward(motioner, joints);
+        test_forward(motioner, { 0., 0., 0., 0., 0., 0. }, true);
+    }
 
     std::cout.unsetf(std::ios::fixed);
     std::cout << std::setprecision(6);

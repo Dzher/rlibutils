@@ -6,6 +6,11 @@ add_executable(${TARGET_NAME}
     main.cpp
 )
 
+target_include_directories(${TARGET_NAME}
+    PRIVATE
+    ../common.h
+)
+
 target_link_libraries(${TARGET_NAME}
     PRIVATE
     rlibutils

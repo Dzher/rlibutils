@@ -25,6 +25,7 @@ public:
     Motioner(const Motioner& other);
     ~Motioner();
 
+    bool isValid() const;
     int getDof() const;
     int getOperationDof() const;
     xyzWithQuaternion getEndEffectorQuatPos() const;
@@ -33,12 +34,14 @@ public:
     // Forward Kinematics
     std::optional<xyzWithQuaternion> getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const;
     std::optional<xyzWithQuaternion> getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const;
+    // std::optional<xyzWithEuler> getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const;
+    // std::optional<xyzWithEuler> getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const;
 
     // Inverse Kinematics
-    std::vector<double> getDegreesByTXyzQuat(const xyzWithQuaternion& target) const;
-    std::vector<double> getRadiansByTXyzQuat(const xyzWithQuaternion& target) const;
-    std::vector<double> getDegreesByXyzEuler(const xyzWithEuler& target) const;
-    std::vector<double> getRadiansByXyzEuler(const xyzWithEuler& target) const;
+    std::optional<std::vector<double>> getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<std::vector<double>> getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<std::vector<double>> getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<std::vector<double>> getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
 
 private:
     MotionerPrivate* d_ = nullptr;

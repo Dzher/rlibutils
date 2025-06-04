@@ -13,6 +13,10 @@
 #include <array>
 
 namespace roblib {
+enum class InverseMethod {
+    Jacob,
+    Nolpt
+};
 
 struct RLIB_API Pos {
     double x = 0.0;
