@@ -7,4 +7,4 @@ file(COPY ${URDF_FILES}
 
 add_subdirectory(test_base_info)
 add_subdirectory(test_forward)
-# add_subdirectory(test_inverse)
+add_subdirectory(test_inverse)
