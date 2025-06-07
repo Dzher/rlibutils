@@ -43,6 +43,19 @@
             }
         },
         {
+            "name": "common-debug",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build-dbg",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install-dbg",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_DEBUG_POSTFIX": {
+                    "type": "STRING",
+                    "value": "d"
+                }
+            }
+        },
+        {
             "name": "common-release",
             "hidden": true,
             "binaryDir": "${sourceDir}/build-rel",
@@ -61,6 +74,14 @@
             }
         },
         {
+            "name": "ninja-linux-debug",
+            "inherits": [
+                "common-linux",
+                "common-debug"
+            ],
+            "displayName": "Ninja GCC Debug"
+        },
+        {
             "name": "ninja-linux-release",
             "inherits": [
                 "common-linux",
@@ -75,6 +96,14 @@
                 "common-relwithdbg"
             ],
             "displayName": "Ninja GCC RelWithDebInfo"
+        },
+        {
+            "name": "ninja-msvc-debug",
+            "inherits": [
+                "common-msvc",
+                "common-debug"
+            ],
+            "displayName": "Ninja MSVC Debug"
         },
         {
             "name": "ninja-msvc-release",

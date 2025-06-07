@@ -39,13 +39,13 @@ rl::math::Transform transformPos2RlTransfromImpl2(const xyzWithQuaternion& in)
 }
 }
 
-rl::mdl::Model* ModelUtils::getModelFromUrdf(const ::std::string& model_file_path)
+std::shared_ptr<rl::mdl::Model> ModelUtils::getModelFromUrdf(const ::std::string& model_file_path)
 {
     rl::mdl::UrdfFactory urdf_factory;
     return urdf_factory.create(model_file_path);
 }
 
-rl::mdl::Model* ModelUtils::getModelFromXml(const ::std::string& model_file_path)
+std::shared_ptr<rl::mdl::Model> ModelUtils::getModelFromXml(const ::std::string& model_file_path)
 {
     rl::mdl::XmlFactory xml_factory;
     return xml_factory.create(model_file_path);
@@ -98,14 +98,11 @@ xyzWithEuler ModelUtils::rlTransform2XyzEuler(const rl::math::Transform& in)
     const auto& t = in.translation();
     res.position({ t.x(), t.y(), t.z() });
 
-    // TODO: some issues here
-    // const rl::math::Rotation euler { in.rotation() };
-    // res.rotation({ euler.x(), euler.y(), euler.z() });
-    const rl::math::Rotation r { in.rotation() };
-    res.euler.a = std::atan2(r(1, 0), r(0, 0));
-    res.euler.b = std::atan2(-r(2, 0), std::sqrt(r(2, 1) * r(2, 1) + r(2, 2) * r(2, 2)));
-    res.euler.c = std::atan2(r(2, 1), r(2, 2));
-
+    Eigen::Matrix3d rotation = in.linear();
+    Eigen::Vector3d euler = rotation.eulerAngles(0, 1, 2); // XYZ-RPY 顺序
+    res.euler.c = euler[0];
+    res.euler.b = euler[1];
+    res.euler.a = euler[2];
     return res;
 }
 

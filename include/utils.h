@@ -1,7 +1,8 @@
 #pragma once
 
-#include "macro.h"
 #include "data.h"
+#include "macro.h"
+#include <memory>
 #include <rl/mdl/Model.h>
 #include <string>
 
@@ -12,8 +13,8 @@ public:
     static bool isXmlFile(const std::string& file_path);
 
     // load model form file
-    static rl::mdl::Model* getModelFromUrdf(const ::std::string& model_file_path);
-    static rl::mdl::Model* getModelFromXml(const ::std::string& model_file_path);
+    static std::shared_ptr<rl::mdl::Model> getModelFromUrdf(const ::std::string& model_file_path);
+    static std::shared_ptr<rl::mdl::Model> getModelFromXml(const ::std::string& model_file_path);
 
     static rl::math::Transform xyzQuat2RlTransfrom(const xyzWithQuaternion& in);
     static xyzWithQuaternion rlTransform2XyzQuat(const rl::math::Transform& in);

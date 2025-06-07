@@ -6,12 +6,11 @@
         "--header-insertion=never",
         "--clang-tidy",
         "--fallback-style=WebKit",
-        "--compile-commands-dir=i:/workspace/rlibutils/build-relwithdbg",
+        "--compile-commands-dir=i:/workspace/rlibutils/build-dbg",
     ],
     "cmake.cmakePath": "D:\\cmake\\bin\\cmake.exe",
     "cmake.configureArgs": [
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-        // "-DCMAKE_TOOLCHAIN_FILE=D:/Install/BuildTools/vcpkg/scripts/buildsystems/vcpkg.cmake"
     ],
     "cmake.debugConfig": {
         "sourceFileMap": {
