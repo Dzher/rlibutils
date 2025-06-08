@@ -4,7 +4,7 @@ project(RL_LIB_UTILS VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_TESTS "Build test tools" OFF)
+option(BUILD_TESTS "Build test tools" ON)
 
 if(MSVC)
   add_compile_options(/utf-8)
@@ -26,26 +26,19 @@ set(CMAKE_PREFIX_PATH "${RL_DIR}" ${CMAKE_PREFIX_PATH})
 
 find_package(rl REQUIRED)
 
-# include_directories(
-#     PUBLIC
-#     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-#     $<INSTALL_INTERFACE:include>
-# )
-
-# add_subdirectory(source)
-
 if(BUILD_TESTS)
-  # add_subdirectory(tests)
+  add_subdirectory(tests)
 endif()
 
 add_library(rlibutils
+    # SHARED
     source/motioner.cpp
     source/utils.cpp
 )
 
 if(WIN32)
-    target_compile_definitions(rlibutils PRIVATE R_LIB_UTILS_EXPORTS)
-    target_compile_definitions(rlibutils PUBLIC R_LIB_UTILS_IMPORTS)
+    target_compile_definitions(rlibutils PRIVATE R_LIB_SHARED_EXPORT)
+    target_compile_definitions(rlibutils PUBLIC R_LIB_SHARED_IMPORTS)
 endif()
 
 target_link_libraries(rlibutils ${RL_LIBRARIES})
@@ -58,7 +51,6 @@ target_include_directories(rlibutils
 
 include(GNUInstallDirs)
 
-# 生成多配置目标（例如 Debug 和 Release）
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
