@@ -31,14 +31,14 @@ if(BUILD_TESTS)
 endif()
 
 add_library(rlibutils
-    # SHARED
+    SHARED
     source/motioner.cpp
     source/utils.cpp
 )
 
 if(WIN32)
     target_compile_definitions(rlibutils PRIVATE R_LIB_SHARED_EXPORT)
-    target_compile_definitions(rlibutils PUBLIC R_LIB_SHARED_IMPORTS)
+    target_compile_definitions(rlibutils PUBLIC R_LIB_SHARED_IMPORT)
 endif()
 
 target_link_libraries(rlibutils ${RL_LIBRARIES})
