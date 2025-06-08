@@ -5,3 +5,5 @@
 **/install-*
 **/.vscode
 **/private
+*.zip
+_*
