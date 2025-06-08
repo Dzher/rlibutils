@@ -20,6 +20,6 @@ You can change this lib's install direction by modify the `CMakePresets.json` fi
 `cpack --config CPackConfig.cmake`
 
 ## How To Use
-`find_package(rlutilslib CONFIG REQUIRED)`
+`find_package(rlibutils CONFIG REQUIRED)`
 
-`target_link_libraries(your_target PRIVATE rlutilslib::rlutilslib)`
+`target_link_libraries(your_target PRIVATE rlibutils::rlibutils)`
