@@ -4,7 +4,7 @@
 
 inline void test_forward(const roblib::Motioner& motioner, const std::vector<double>& pos, bool mute = false)
 {
-    auto res = motioner.getEndEffectorPosByDegree(pos);
+    auto res = motioner.getEndEffectorQuatPosByDegree(pos);
     if (res.has_value()) {
         if (mute) {
             return;

@@ -69,7 +69,7 @@ std::vector<double> Motioner::getJointDegree() const
     return res;
 }
 
-std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByDegree(const std::vector<double>& joint_degrees) const
+std::optional<xyzWithQuaternion> Motioner::getEndEffectorQuatPosByDegree(const std::vector<double>& joint_degrees) const
 {
     if (joint_degrees.size() != getDof()) {
         return std::nullopt;
@@ -88,7 +88,7 @@ std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByDegree(const std::
     return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
 }
 
-std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByRadian(const std::vector<double>& joint_radians) const
+std::optional<xyzWithQuaternion> Motioner::getEndEffectorQuatPosByRadian(const std::vector<double>& joint_radians) const
 {
     if (joint_radians.size() != getDof()) {
         return std::nullopt;
@@ -105,6 +105,45 @@ std::optional<xyzWithQuaternion> Motioner::getEndEffectorPosByRadian(const std::
     rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
 
     return ModelUtils::rlTransform2XyzQuat(end_effector_pos);
+}
+
+std::optional<xyzWithEuler> Motioner::getEndEffectorEulerPosByDegree(const std::vector<double>& joint_degrees) const
+{
+    if (joint_degrees.size() != getDof()) {
+        return std::nullopt;
+    }
+
+    rl::math::Vector position { getDof() };
+    for (int i = 0; i < position.size(); ++i) {
+        position[i] = joint_degrees[i] * rl::math::constants::deg2rad;
+    }
+    auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    kin_model->setPosition(position);
+    kin_model->forwardPosition();
+
+    rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
+    kin_model->getPosition();
+
+    return ModelUtils::rlTransform2XyzEuler(end_effector_pos);
+}
+
+std::optional<xyzWithEuler> Motioner::getEndEffectorEulerPosByRadian(const std::vector<double>& joint_radians) const
+{
+    if (joint_radians.size() != getDof()) {
+        return std::nullopt;
+    }
+
+    rl::math::Vector position { getDof() };
+    for (int i = 0; i < position.size(); ++i) {
+        position[i] = joint_radians[i];
+    }
+    auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    kin_model->setPosition(position);
+    kin_model->forwardPosition();
+
+    rl::math::Transform end_effector_pos = kin_model->getOperationalPosition(0);
+
+    return ModelUtils::rlTransform2XyzEuler(end_effector_pos);
 }
 
 std::optional<std::vector<double>> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method) const

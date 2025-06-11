@@ -34,10 +34,10 @@ int main()
         new_pos.pos.x = positions[0];
         new_pos.pos.y = positions[1];
         new_pos.pos.z = positions[2];
-        new_pos.quat.q1 = quaternions[0];
-        new_pos.quat.q2 = quaternions[1];
-        new_pos.quat.q3 = quaternions[2];
-        new_pos.quat.q4 = quaternions[3];
+        new_pos.quat.qw = quaternions[0];
+        new_pos.quat.qx = quaternions[1];
+        new_pos.quat.qy = quaternions[2];
+        new_pos.quat.qz = quaternions[3];
 
         test_inverse(motioner, new_pos);
     }

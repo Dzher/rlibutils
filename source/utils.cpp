@@ -7,35 +7,19 @@
 using namespace roblib;
 
 namespace {
-rl::math::Transform transformPos2RlTransfromImpl1(const xyzWithQuaternion& in)
+rl::math::Transform transformPos2RlTransfromImpl(const xyzWithQuaternion& in)
 {
     return rl::math::Transform(
         Eigen::Translation3d(
             in.x(),
             in.y(),
             in.z())
-        * Eigen::Quaterniond(
-            in.q1(),
-            in.q2(),
-            in.q3(),
-            in.q4())
+        * rl::math::Quaternion(
+            in.qw(),
+            in.qx(),
+            in.qy(),
+            in.qz())
             .normalized());
-}
-
-rl::math::Transform transformPos2RlTransfromImpl2(const xyzWithQuaternion& in)
-{
-    rl::math::Transform t;
-    rl::math::Quaternion q(
-        in.q1(),
-        in.q2(),
-        in.q3(),
-        in.q4());
-    q.normalize();
-    t.linear() = q.toRotationMatrix();
-    t.translation().x() = in.x();
-    t.translation().y() = in.y();
-    t.translation().z() = in.z();
-    return t;
 }
 }
 
@@ -65,8 +49,7 @@ bool ModelUtils::isXmlFile(const std::string& file_path)
 
 rl::math::Transform ModelUtils::xyzQuat2RlTransfrom(const xyzWithQuaternion& in)
 {
-    // TODO: which method is better? It's a problem
-    return transformPos2RlTransfromImpl2(in);
+    return transformPos2RlTransfromImpl(in);
 }
 
 xyzWithQuaternion ModelUtils::rlTransform2XyzQuat(const rl::math::Transform& in)
@@ -75,7 +58,6 @@ xyzWithQuaternion ModelUtils::rlTransform2XyzQuat(const rl::math::Transform& in)
     const auto& t = in.translation();
     res.position({ t.x(), t.y(), t.z() });
 
-    // Eigen::Quaterniond q(in.linear());
     rl::math::Quaternion q(in.linear());
     res.rotation({ q.w(), q.x(), q.y(), q.z() });
 
@@ -99,7 +81,7 @@ xyzWithEuler ModelUtils::rlTransform2XyzEuler(const rl::math::Transform& in)
     res.position({ t.x(), t.y(), t.z() });
 
     Eigen::Matrix3d rotation = in.linear();
-    Eigen::Vector3d euler = rotation.eulerAngles(0, 1, 2); // XYZ-RPY 顺序
+    Eigen::Vector3d euler = rotation.eulerAngles(0, 1, 2); // cba-012-XYZ-RPY 顺序
     res.euler.c = euler[0];
     res.euler.b = euler[1];
     res.euler.a = euler[2];
@@ -110,10 +92,10 @@ Euler ModelUtils::quaternion2Euler(const Quaternion& quat)
 {
     Euler res;
     rl::math::Quaternion q;
-    q.w() = quat.q1;
-    q.x() = quat.q2;
-    q.y() = quat.q3;
-    q.z() = quat.q4;
+    q.w() = quat.qw;
+    q.x() = quat.qx;
+    q.y() = quat.qy;
+    q.z() = quat.qz;
 
     rl::math::Vector3 euler = q.toRotationMatrix().eulerAngles(2, 1, 0);
     res.a = euler[0];
@@ -127,10 +109,10 @@ Quaternion ModelUtils::euler2Quaternion(const Euler& euler)
 {
     Quaternion res;
     rl::math::Quaternion q = rl::math::AngleAxis(euler.a, rl::math::Vector3::UnitZ()) * rl::math::AngleAxis(euler.b, rl::math::Vector3::UnitY()) * rl::math::AngleAxis(euler.c, rl::math::Vector3::UnitX());
-    res.q1 = q.w();
-    res.q2 = q.x();
-    res.q3 = q.y();
-    res.q4 = q.z();
+    res.qw = q.w();
+    res.qx = q.x();
+    res.qy = q.y();
+    res.qz = q.z();
 
     return res;
 }

@@ -16,16 +16,17 @@ struct RLIB_API Pos {
 };
 
 struct RLIB_API Quaternion {
-    double q1 = 1.0;
-    double q2 = 0.0;
-    double q3 = 0.0;
-    double q4 = 0.0;
+    double qw = 1.0;
+    double qx = 0.0;
+    double qy = 0.0;
+    double qz = 0.0;
 };
 
 struct RLIB_API Euler {
-    double c = 1.0; // roll
-    double b = 0.0; // pitch
-    double a = 0.0; // yaw
+    // cba-012-XYZ-RPY
+    double c = 1.0; // roll-X-c-0
+    double b = 0.0; // pitch-Y-b-1
+    double a = 0.0; // yaw-Z-a-2
 };
 
 struct RLIB_API xyzWithQuaternion {
@@ -34,10 +35,10 @@ struct RLIB_API xyzWithQuaternion {
         pos.x = 0.0;
         pos.y = 0.0;
         pos.z = 0.0;
-        quat.q1 = 1.0;
-        quat.q2 = 0.0;
-        quat.q3 = 0.0;
-        quat.q4 = 0.0;
+        quat.qw = 1.0;
+        quat.qx = 0.0;
+        quat.qy = 0.0;
+        quat.qz = 0.0;
     }
 
     xyzWithQuaternion(const std::array<double, 3>& pos,
@@ -68,21 +69,21 @@ struct RLIB_API xyzWithQuaternion {
     double z() const { return pos.z; }
 
     Quaternion quat;
-    void rotation(const std::array<double, 4>& q4)
+    void rotation(const std::array<double, 4>& wxyz)
     {
-        quat.q1 = q4[0];
-        quat.q2 = q4[1];
-        quat.q3 = q4[2];
-        quat.q4 = q4[3];
+        quat.qw = wxyz[0];
+        quat.qx = wxyz[1];
+        quat.qy = wxyz[2];
+        quat.qz = wxyz[3];
     }
     std::array<double, 4> rotation()
     {
-        return { quat.q1, quat.q2, quat.q3, quat.q4 };
+        return { quat.qw, quat.qx, quat.qy, quat.qz };
     };
-    double q1() const { return quat.q1; }
-    double q2() const { return quat.q2; }
-    double q3() const { return quat.q3; }
-    double q4() const { return quat.q4; }
+    double qw() const { return quat.qw; }
+    double qx() const { return quat.qx; }
+    double qy() const { return quat.qy; }
+    double qz() const { return quat.qz; }
 };
 
 struct RLIB_API xyzWithEuler {
