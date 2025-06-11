@@ -15,7 +15,11 @@ You can change this lib's install direction by modify the `CMakePresets.json` fi
 `cmake --install . --config Debug`
 
 ## Package Method
+if you just want a version of the lib's zip file, using:
+
 `cd build-rel` or `cd build-dbg`
+
+and then:
 
 `cpack --config CPackConfig.cmake`
 
