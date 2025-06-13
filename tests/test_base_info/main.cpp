@@ -22,7 +22,7 @@ void test_get_current_endpos(const roblib::Motioner& motioner)
 
 void test_get_current_joint_degree(const roblib::Motioner& motioner)
 {
-    auto joint_degrees = motioner.getJointDegree();
+    auto joint_degrees = motioner.getJointDegrees();
     std::cout << "model joint degrees: " << std::endl;
     for (auto each : joint_degrees) {
         std::cout << each << ", ";

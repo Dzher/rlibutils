@@ -39,6 +39,9 @@ public:
     std::optional<JointAngles> getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
     std::optional<JointAngles> getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
 
+    static xyzWithEuler getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset);
+    static xyzWithEuler getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset);
+
 private:
     MotionerPrivate* d_ = nullptr;
 };
