@@ -2,12 +2,23 @@
 
 #include "macro.h"
 #include <array>
+#include <vector>
 
 namespace roblib {
 enum class InverseMethod {
     Jacob,
     Nolpt
 };
+
+enum class ModelType {
+    RokaeCR7,
+    RokaeCR12,
+    KawasakiRs013,
+    KawasakiRs020,
+    KawasakiRs025
+};
+
+using JointAngles = std::vector<double>;
 
 struct RLIB_API Pos {
     double x = 0.0;

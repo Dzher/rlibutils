@@ -13,7 +13,7 @@ endif()
 add_definitions(-D_USE_MATH_DEFINES)
 
 # 设置 RL 安装路径根目录
-set(RL_BASE_DIR "I:/workspace/rl-install")
+set(RL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rl-install)
 
 # 根据构建类型选择合适的前缀路径
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -23,12 +23,9 @@ else()
 endif()
 
 set(CMAKE_PREFIX_PATH "${RL_DIR}" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/rl-3rdparty" ${CMAKE_PREFIX_PATH})
 
 find_package(rl REQUIRED)
-
-if(BUILD_TESTS)
-  add_subdirectory(tests)
-endif()
 
 add_library(rlibutils
     SHARED
@@ -49,6 +46,13 @@ target_include_directories(rlibutils
     $<INSTALL_INTERFACE:include>
 )
 
+set(MODEL_SOURCE_DIR "models")
+add_subdirectory(${MODEL_SOURCE_DIR})
+
+if(BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
+
 include(GNUInstallDirs)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -64,6 +68,8 @@ install(TARGETS rlibutils
 )
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${MODEL_SOURCE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/rl-3rdparty/bin/ DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # 导出 targets
 install(EXPORT rlibutilsTargets

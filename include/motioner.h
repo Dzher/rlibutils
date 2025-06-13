@@ -4,7 +4,6 @@
 #include "macro.h"
 #include <optional>
 #include <string>
-#include <vector>
 
 namespace roblib {
 
@@ -13,6 +12,7 @@ struct MotionerPrivate;
 class RLIB_API Motioner {
 public:
     explicit Motioner(const std::string& model_file_path);
+    explicit Motioner(ModelType type, const std::string& model_dir);
     Motioner(const Motioner& other);
     ~Motioner();
 
@@ -23,19 +23,21 @@ public:
 
     xyzWithQuaternion getEndEffectorQuatPos() const;
     xyzWithEuler getEndEffectorEulerPos() const;
-    std::vector<double> getJointDegree() const;
+
+    JointAngles getJointDegrees() const;
+    JointAngles getJointRadians() const;
 
     // Forward Kinematics
-    std::optional<xyzWithQuaternion> getEndEffectorQuatPosByDegree(const std::vector<double>& joint_degrees) const;
-    std::optional<xyzWithQuaternion> getEndEffectorQuatPosByRadian(const std::vector<double>& joint_radians) const;
-    std::optional<xyzWithEuler> getEndEffectorEulerPosByDegree(const std::vector<double>& joint_degrees) const;
-    std::optional<xyzWithEuler> getEndEffectorEulerPosByRadian(const std::vector<double>& joint_radians) const;
+    std::optional<xyzWithQuaternion> getEndEffectorQuatPosByDegree(const JointAngles& joint_degrees) const;
+    std::optional<xyzWithQuaternion> getEndEffectorQuatPosByRadian(const JointAngles& joint_radians) const;
+    std::optional<xyzWithEuler> getEndEffectorEulerPosByDegree(const JointAngles& joint_degrees) const;
+    std::optional<xyzWithEuler> getEndEffectorEulerPosByRadian(const JointAngles& joint_radians) const;
 
     // Inverse Kinematics
-    std::optional<std::vector<double>> getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<std::vector<double>> getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<std::vector<double>> getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<std::vector<double>> getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<JointAngles> getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<JointAngles> getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<JointAngles> getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<JointAngles> getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
 
 private:
     MotionerPrivate* d_ = nullptr;
