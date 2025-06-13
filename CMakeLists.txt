@@ -13,17 +13,21 @@ endif()
 add_definitions(-D_USE_MATH_DEFINES)
 
 # 设置 RL 安装路径根目录
-set(RL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rl-install)
-
-# 根据构建类型选择合适的前缀路径
+set(RL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rl)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(RL_DIR "${RL_BASE_DIR}/debug")
 else()
     set(RL_DIR "${RL_BASE_DIR}/release")
 endif()
-
 set(CMAKE_PREFIX_PATH "${RL_DIR}" ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/rl-3rdparty" ${CMAKE_PREFIX_PATH})
+
+set(RL_3d_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rl-3rdparty)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(RL_3d_DIR "${RL_3d_BASE_DIR}/debug")
+else()
+    set(RL_3d_DIR "${RL_3d_BASE_DIR}/release")
+endif()
+set(CMAKE_PREFIX_PATH "${RL_3d_BASE_DIR}" ${CMAKE_PREFIX_PATH})
 
 find_package(rl REQUIRED)
 
