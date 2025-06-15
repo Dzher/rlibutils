@@ -23,9 +23,9 @@ set(CMAKE_PREFIX_PATH "${RL_DIR}" ${CMAKE_PREFIX_PATH})
 
 set(RL_3d_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rl-3rdparty)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(RL_3d_DIR "${RL_3d_BASE_DIR}/debug")
+    set(RL_3d_DIR "${RL_3d_BASE_DIR}/bin/debug")
 else()
-    set(RL_3d_DIR "${RL_3d_BASE_DIR}/release")
+    set(RL_3d_DIR "${RL_3d_BASE_DIR}/bin/release")
 endif()
 set(CMAKE_PREFIX_PATH "${RL_3d_BASE_DIR}" ${CMAKE_PREFIX_PATH})
 
@@ -73,7 +73,7 @@ install(TARGETS rlibutils
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${MODEL_SOURCE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/rl-3rdparty/bin/ DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY ${RL_3d_DIR} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # 导出 targets
 install(EXPORT rlibutilsTargets

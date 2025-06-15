@@ -11,8 +11,8 @@ struct MotionerPrivate;
 
 class RLIB_API Motioner {
 public:
-    explicit Motioner(const std::string& model_file_path);
-    explicit Motioner(ModelType type, const std::string& model_dir);
+    explicit Motioner(const std::string& model_file_path, InverseMethod method = InverseMethod::Jacob);
+    explicit Motioner(ModelType type, const std::string& model_dir, InverseMethod method = InverseMethod::Jacob);
     Motioner(const Motioner& other);
     ~Motioner();
 

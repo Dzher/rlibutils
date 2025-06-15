@@ -10,15 +10,22 @@ using namespace roblib;
 
 struct roblib::MotionerPrivate {
     std::shared_ptr<rl::mdl::Model> model = nullptr;
+    std::unique_ptr<rl::mdl::InverseKinematics> ik = nullptr;
 };
 
-Motioner::Motioner(const std::string& model_file_path)
+Motioner::Motioner(const std::string& model_file_path, InverseMethod method)
     : d_(new MotionerPrivate)
 {
     d_->model = ModelUtils::isUrdfFile(model_file_path) ? ModelUtils::getModelFromUrdf(model_file_path) : ModelUtils::getModelFromXml(model_file_path);
+    auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    if (method == InverseMethod::Jacob) {
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+    } else {
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+    }
 }
 
-Motioner::Motioner(ModelType type, const std::string& model_dir)
+Motioner::Motioner(ModelType type, const std::string& model_dir, InverseMethod method)
     : d_(new MotionerPrivate)
 {
     std::string full_path;
@@ -45,7 +52,14 @@ Motioner::Motioner(ModelType type, const std::string& model_dir)
         break;
     }
     }
+
     d_->model = ModelUtils::getModelFromUrdf(full_path);
+    auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    if (method == InverseMethod::Jacob) {
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+    } else {
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+    }
 }
 
 Motioner::Motioner(const Motioner& other)
@@ -192,15 +206,14 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    std::unique_ptr<rl::mdl::InverseKinematics> ik;
     if (method == InverseMethod::Jacob) {
-        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
     } else {
-        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    ik->addGoal({ trans, 0 });
+    d_->ik->addGoal({ trans, 0 });
 
-    if (ik->solve()) {
+    if (d_->ik->solve()) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
@@ -215,15 +228,14 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    std::unique_ptr<rl::mdl::InverseKinematics> ik;
     if (method == InverseMethod::Jacob) {
-        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
     } else {
-        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    ik->addGoal({ trans, 0 });
+    d_->ik->addGoal({ trans, 0 });
 
-    if (ik->solve()) {
+    if (d_->ik->solve()) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
@@ -238,15 +250,14 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    std::unique_ptr<rl::mdl::InverseKinematics> ik;
     if (method == InverseMethod::Jacob) {
-        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
     } else {
-        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    ik->addGoal({ trans, 0 });
+    d_->ik->addGoal({ trans, 0 });
 
-    if (ik->solve()) {
+    if (d_->ik->solve()) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
@@ -261,15 +272,14 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    std::unique_ptr<rl::mdl::InverseKinematics> ik;
     if (method == InverseMethod::Jacob) {
-        ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
     } else {
-        ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
+        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    ik->addGoal({ trans, 0 });
+    d_->ik->addGoal({ trans, 0 });
 
-    if (ik->solve()) {
+    if (d_->ik->solve()) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
