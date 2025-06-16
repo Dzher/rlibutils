@@ -10,7 +10,7 @@ using namespace roblib;
 
 struct roblib::MotionerPrivate {
     std::shared_ptr<rl::mdl::Model> model = nullptr;
-    std::unique_ptr<rl::mdl::InverseKinematics> ik = nullptr;
+    std::unique_ptr<rl::mdl::IterativeInverseKinematics> ik = nullptr;
 };
 
 Motioner::Motioner(const std::string& model_file_path, InverseMethod method)
@@ -60,6 +60,7 @@ Motioner::Motioner(ModelType type, const std::string& model_dir, InverseMethod m
     } else {
         d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
+    d_->ik->setDuration(std::chrono::seconds(1));
 }
 
 Motioner::Motioner(const Motioner& other)
@@ -76,6 +77,11 @@ Motioner::~Motioner()
 bool Motioner::isValid() const
 {
     return d_->model != nullptr;
+}
+
+void Motioner::setDuration(long long ms)
+{
+    d_->ik->setDuration(std::chrono::microseconds(ms));
 }
 
 int Motioner::getDof() const
@@ -201,16 +207,11 @@ std::optional<xyzWithEuler> Motioner::getEndEffectorEulerPosByRadian(const Joint
     return ModelUtils::rlTransform2XyzEuler(end_effector_pos);
 }
 
-std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method) const
+std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion& target) const
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    if (method == InverseMethod::Jacob) {
-        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
-    } else {
-        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
-    }
     d_->ik->addGoal({ trans, 0 });
 
     if (d_->ik->solve()) {
@@ -223,16 +224,11 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
     return std::nullopt;
 }
 
-std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method) const
+std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion& target) const
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    if (method == InverseMethod::Jacob) {
-        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
-    } else {
-        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
-    }
     d_->ik->addGoal({ trans, 0 });
 
     if (d_->ik->solve()) {
@@ -245,16 +241,11 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
     return std::nullopt;
 }
 
-std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method) const
+std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& target) const
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    if (method == InverseMethod::Jacob) {
-        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
-    } else {
-        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
-    }
     d_->ik->addGoal({ trans, 0 });
 
     if (d_->ik->solve()) {
@@ -267,16 +258,11 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
     return std::nullopt;
 }
 
-std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method) const
+std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& target) const
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
-    if (method == InverseMethod::Jacob) {
-        d_->ik = std::make_unique<rl::mdl::JacobianInverseKinematics>(kin_model.get());
-    } else {
-        d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
-    }
     d_->ik->addGoal({ trans, 0 });
 
     if (d_->ik->solve()) {

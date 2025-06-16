@@ -17,6 +17,7 @@ public:
     ~Motioner();
 
     bool isValid() const;
+    void setDuration(long long ms);
 
     int getDof() const;
     int getOperationDof() const;
@@ -34,10 +35,10 @@ public:
     std::optional<xyzWithEuler> getEndEffectorEulerPosByRadian(const JointAngles& joint_radians) const;
 
     // Inverse Kinematics
-    std::optional<JointAngles> getDegreesByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<JointAngles> getRadiansByXyzQuat(const xyzWithQuaternion& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<JointAngles> getDegreesByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
-    std::optional<JointAngles> getRadiansByXyzEuler(const xyzWithEuler& target, InverseMethod method = InverseMethod::Jacob) const;
+    std::optional<JointAngles> getDegreesByXyzQuat(const xyzWithQuaternion& target) const;
+    std::optional<JointAngles> getRadiansByXyzQuat(const xyzWithQuaternion& target) const;
+    std::optional<JointAngles> getDegreesByXyzEuler(const xyzWithEuler& target) const;
+    std::optional<JointAngles> getRadiansByXyzEuler(const xyzWithEuler& target) const;
 
     static xyzWithEuler getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset);
     static xyzWithEuler getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset);
