@@ -7,5 +7,5 @@
 **/private
 *.zip
 _*
-rl-3rdparty/bin
+# rl-3rdparty
 # rl
