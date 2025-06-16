@@ -1,11 +1,13 @@
 #include "motioner.h"
 #include "utils.h"
+#include <iostream>
 #include <rl/math/Constants.h>
 #include <rl/math/Transform.h>
 #include <rl/mdl/JacobianInverseKinematics.h>
 #include <rl/mdl/Kinematic.h>
 #include <rl/mdl/Model.h>
 #include <rl/mdl/NloptInverseKinematics.h>
+
 using namespace roblib;
 
 struct roblib::MotionerPrivate {
@@ -214,7 +216,12 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
 
     d_->ik->addGoal({ trans, 0 });
 
-    if (d_->ik->solve()) {
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    bool solved = d_->ik->solve();
+    std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
+    std::cout << (solved ? "true" : "false") << " " << std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count() * 1000 << " ms" << std::endl;
+
+    if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
@@ -231,7 +238,12 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
 
     d_->ik->addGoal({ trans, 0 });
 
-    if (d_->ik->solve()) {
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    bool solved = d_->ik->solve();
+    std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
+    std::cout << (solved ? "true" : "false") << " " << std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count() * 1000 << " ms" << std::endl;
+
+    if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
@@ -248,7 +260,12 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
 
     d_->ik->addGoal({ trans, 0 });
 
-    if (d_->ik->solve()) {
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    bool solved = d_->ik->solve();
+    std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
+    std::cout << (solved ? "true" : "false") << " " << std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count() * 1000 << " ms" << std::endl;
+
+    if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
@@ -265,7 +282,12 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
 
     d_->ik->addGoal({ trans, 0 });
 
-    if (d_->ik->solve()) {
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    bool solved = d_->ik->solve();
+    std::chrono::steady_clock::time_point stop = std::chrono::steady_clock::now();
+    std::cout << (solved ? "true" : "false") << " " << std::chrono::duration_cast<std::chrono::duration<double>>(stop - start).count() * 1000 << " ms" << std::endl;
+
+    if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
             res.push_back(kin_model->getPosition()[i]);
