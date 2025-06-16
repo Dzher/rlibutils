@@ -67,7 +67,7 @@ xyzWithQuaternion ModelUtils::rlTransform2XyzQuat(const rl::math::Transform& in)
 rl::math::Transform ModelUtils::xyzEuler2RlTransfrom(const xyzWithEuler& in)
 {
     rl::math::Transform t;
-    t = rl::math::AngleAxis(in.a(), rl::math::Vector3::UnitZ()) * rl::math::AngleAxis(in.b(), rl::math::Vector3::UnitY()) * rl::math::AngleAxis(in.c(), rl::math::Vector3::UnitX());
+    t = rl::math::AngleAxis(in.c(), rl::math::Vector3::UnitZ()) * rl::math::AngleAxis(in.b(), rl::math::Vector3::UnitY()) * rl::math::AngleAxis(in.a(), rl::math::Vector3::UnitX());
     t.translation().x() = in.x();
     t.translation().y() = in.y();
     t.translation().z() = in.z();
@@ -81,7 +81,7 @@ xyzWithEuler ModelUtils::rlTransform2XyzEuler(const rl::math::Transform& in)
     res.position({ t.x(), t.y(), t.z() });
 
     Eigen::Matrix3d rotation = in.linear();
-    Eigen::Vector3d euler = rotation.eulerAngles(0, 1, 2); // cba-012-XYZ-RPY 顺序
+    Eigen::Vector3d euler = rotation.eulerAngles(2, 1, 0); // cba-012-ZYX-[Yaw-Potch-Roll] 顺序
     res.euler.c = euler[0];
     res.euler.b = euler[1];
     res.euler.a = euler[2];
