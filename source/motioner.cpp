@@ -83,7 +83,7 @@ bool Motioner::isValid() const
 
 void Motioner::setDuration(long long ms)
 {
-    d_->ik->setDuration(std::chrono::microseconds(ms));
+    d_->ik->setDuration(std::chrono::milliseconds(ms));
 }
 
 int Motioner::getDof() const
