@@ -214,6 +214,7 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
+    d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -236,6 +237,7 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
+    d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -258,6 +260,7 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
+    d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -280,6 +283,7 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
 
+    d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
