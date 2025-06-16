@@ -8,11 +8,13 @@ cmake -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_INSTALL_PREFIX=I:/wo
 cmake --build I:/workspace/rlibutils/build-rel --parallel 18 --
 
 # install debug & release
-cmake --install I:/workspace/rlibutils/build-dbg --config Debug
-cmake --install I:/workspace/rlibutils/build-rel --config Release
+cmake --install build-dbg --config Debug
+cmake --install build-rel --config Release
 
 # packing the install direction
-cpack -G ZIP --config I:/workspace/rlibutils/build-dbg/CPackConfig.cmake
+# cpack -G ZIP --config build-dbg/CPackConfig.cmake
+cd install
+zip -r ../rlibutils.zip */
 
 echo "Success Packing rlibutils!"
 rm -rf _CPack_Packages/
