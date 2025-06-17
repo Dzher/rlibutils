@@ -355,18 +355,51 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
     return std::nullopt;
 }
 
-xyzWithEuler Motioner::getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset)
+xyzWithEuler Motioner::getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset, DeviceMountType type)
 {
-    auto rl_camera_in_world = ModelUtils::xyzEuler2RlTransfrom(device_in_world);
+    auto device_mount = getDeviceMountRotation(type);
+    auto rl_device_mount = ModelUtils::xyzEuler2RlTransfrom(device_mount);
+    auto rl_device_in_world = rl_device_mount * ModelUtils::xyzEuler2RlTransfrom(device_in_world);
     auto rl_device_offset = ModelUtils::xyzEuler2RlTransfrom(device_offset);
-    rl::math::Transform tcp_in_world = rl_camera_in_world * rl_device_offset.inverse();
+    rl::math::Transform tcp_in_world = rl_device_in_world * rl_device_offset.inverse();
     return ModelUtils::rlTransform2XyzEuler(tcp_in_world);
 }
 
-xyzWithEuler Motioner::getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset)
+xyzWithEuler Motioner::getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset, DeviceMountType type)
 {
     auto rl_tcp_in_world = ModelUtils::xyzEuler2RlTransfrom(tcp_in_world);
     auto rl_device_offset = ModelUtils::xyzEuler2RlTransfrom(device_offset);
-    rl::math::Transform device_in_world = rl_tcp_in_world * rl_device_offset;
+    auto device_mount = getDeviceMountRotation(type);
+    auto rl_device_mount = ModelUtils::xyzEuler2RlTransfrom(device_mount);
+    rl::math::Transform device_in_world = rl_device_mount.inverse() * rl_tcp_in_world * rl_device_offset;
     return ModelUtils::rlTransform2XyzEuler(device_in_world);
+}
+
+xyzWithEuler Motioner::getDeviceMountRotation(DeviceMountType mount_type)
+{
+    rl::math::Transform rotate;
+    rotate.setIdentity();
+    switch (mount_type) {
+    case roblib::DeviceMountType::Top: {
+        rotate.rotate(rl::math::AngleAxis(rl::math::constants::pi, Eigen::Vector3d::UnitX())); // X +180°
+        break;
+    }
+    case roblib::DeviceMountType::Left: {
+        rotate.rotate(rl::math::AngleAxis(-90 * rl::math::constants::deg2rad, Eigen::Vector3d::UnitZ())); // Z -90°
+        break;
+    }
+    case roblib::DeviceMountType::Right: {
+        rotate.rotate(rl::math::AngleAxis(90 * rl::math::constants::deg2rad, Eigen::Vector3d::UnitZ())); // Z +90°
+        break;
+    }
+    case roblib::DeviceMountType::Back: {
+        rotate.rotate(rl::math::AngleAxis(rl::math::constants::pi, Eigen::Vector3d::UnitY())); // Y +180°
+        break;
+    }
+    case roblib::DeviceMountType::Self:
+        // "Self" is identity
+        break;
+    }
+
+    return ModelUtils::rlTransform2XyzEuler(rotate);
 }

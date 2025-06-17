@@ -42,8 +42,9 @@ public:
     std::optional<JointAngles> getDegreesByXyzEuler(const xyzWithEuler& target) const;
     std::optional<JointAngles> getRadiansByXyzEuler(const xyzWithEuler& target) const;
 
-    static xyzWithEuler getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset);
-    static xyzWithEuler getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset);
+    static xyzWithEuler getTcpXyzWithEuler(const xyzWithEuler& device_in_world, const xyzWithEuler& device_offset, DeviceMountType type);
+    static xyzWithEuler getDeviceXyzWithEuler(const xyzWithEuler& tcp_in_world, const xyzWithEuler& device_offset, DeviceMountType type);
+    static xyzWithEuler getDeviceMountRotation(DeviceMountType mount_type);
 
 private:
     MotionerPrivate* d_ = nullptr;

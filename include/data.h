@@ -18,6 +18,14 @@ enum class ModelType {
     KawasakiRs025
 };
 
+enum class DeviceMountType {
+    Self,
+    Left,
+    Right,
+    Top,
+    Back
+};
+
 using JointAngles = std::vector<double>;
 
 struct RLIB_API Pos {
