@@ -1,5 +1,6 @@
 #include "motioner.h"
 #include "utils.h"
+#include <cmath>
 #include <iostream>
 #include <rl/math/Constants.h>
 #include <rl/math/Transform.h>
@@ -13,6 +14,8 @@ using namespace roblib;
 struct roblib::MotionerPrivate {
     std::shared_ptr<rl::mdl::Model> model = nullptr;
     std::unique_ptr<rl::mdl::IterativeInverseKinematics> ik = nullptr;
+    double max_radian = rl::math::constants::pi;
+    double max_degree_delta = 10 * rl::math::constants::deg2rad;
 };
 
 Motioner::Motioner(const std::string& model_file_path, InverseMethod method)
@@ -25,6 +28,7 @@ Motioner::Motioner(const std::string& model_file_path, InverseMethod method)
     } else {
         d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
+    d_->ik->setDuration(std::chrono::milliseconds(250));
 }
 
 Motioner::Motioner(ModelType type, const std::string& model_dir, InverseMethod method)
@@ -62,7 +66,7 @@ Motioner::Motioner(ModelType type, const std::string& model_dir, InverseMethod m
     } else {
         d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    d_->ik->setDuration(std::chrono::seconds(1));
+    d_->ik->setDuration(std::chrono::milliseconds(250));
 }
 
 Motioner::Motioner(const Motioner& other)
@@ -84,6 +88,16 @@ bool Motioner::isValid() const
 void Motioner::setDuration(long long ms)
 {
     d_->ik->setDuration(std::chrono::milliseconds(ms));
+}
+
+void Motioner::setJointMaxDegree(double max_degree)
+{
+    d_->max_radian = max_degree * rl::math::constants::deg2rad;
+}
+
+void Motioner::setJointMaxDegreeDelta(double max_degree_delta)
+{
+    d_->max_degree_delta = max_degree_delta * rl::math::constants::deg2rad;
 }
 
 int Motioner::getDof() const
@@ -213,6 +227,7 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    rl::math::Vector origin_joint_radians = kin_model->getPosition();
 
     d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
@@ -225,7 +240,16 @@ std::optional<JointAngles> Motioner::getDegreesByXyzQuat(const xyzWithQuaternion
     if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-            res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
+            double joint_radian = kin_model->getPosition()[i];
+            if (joint_radian > d_->max_radian) {
+                std::cout << "Warning: larger than joint max radian" << std::endl;
+                return std::nullopt;
+            }
+            if (std::abs(joint_radian - origin_joint_radians[i]) > d_->max_degree_delta) {
+                std::cout << "Warning: larger than joint max change delta" << std::endl;
+                return std::nullopt;
+            }
+            res.push_back(joint_radian * rl::math::constants::rad2deg);
         }
         return res;
     }
@@ -236,6 +260,7 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
 {
     auto trans = ModelUtils::xyzQuat2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    rl::math::Vector origin_joint_radians = kin_model->getPosition();
 
     d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
@@ -248,7 +273,16 @@ std::optional<JointAngles> Motioner::getRadiansByXyzQuat(const xyzWithQuaternion
     if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-            res.push_back(kin_model->getPosition()[i]);
+            double joint_radian = kin_model->getPosition()[i];
+            if (joint_radian > d_->max_radian) {
+                std::cout << "Warning: larger than joint max radian" << std::endl;
+                return std::nullopt;
+            }
+            if (std::abs(joint_radian - origin_joint_radians[i]) > d_->max_degree_delta) {
+                std::cout << "Warning: larger than joint max change delta" << std::endl;
+                return std::nullopt;
+            }
+            res.push_back(joint_radian);
         }
         return res;
     }
@@ -259,6 +293,7 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    rl::math::Vector origin_joint_radians = kin_model->getPosition();
 
     d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
@@ -271,7 +306,16 @@ std::optional<JointAngles> Motioner::getDegreesByXyzEuler(const xyzWithEuler& ta
     if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-            res.push_back(kin_model->getPosition()[i] * rl::math::constants::rad2deg);
+            double joint_radian = kin_model->getPosition()[i];
+            if (joint_radian > d_->max_radian) {
+                std::cout << "Warning: larger than joint max radian" << std::endl;
+                return std::nullopt;
+            }
+            if (std::abs(joint_radian - origin_joint_radians[i]) > d_->max_degree_delta) {
+                std::cout << "Warning: larger than joint max change delta" << std::endl;
+                return std::nullopt;
+            }
+            res.push_back(joint_radian * rl::math::constants::rad2deg);
         }
         return res;
     }
@@ -282,6 +326,7 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
 {
     auto trans = ModelUtils::xyzEuler2RlTransfrom(target);
     auto kin_model = dynamic_pointer_cast<rl::mdl::Kinematic>(d_->model);
+    rl::math::Vector origin_joint_radians = kin_model->getPosition();
 
     d_->ik->clearGoals();
     d_->ik->addGoal({ trans, 0 });
@@ -294,7 +339,16 @@ std::optional<JointAngles> Motioner::getRadiansByXyzEuler(const xyzWithEuler& ta
     if (solved) {
         JointAngles res;
         for (int i = 0; i < kin_model->getPosition().size(); ++i) {
-            res.push_back(kin_model->getPosition()[i]);
+            double joint_radian = kin_model->getPosition()[i];
+            if (joint_radian > d_->max_radian) {
+                std::cout << "Warning: larger than joint max radian" << std::endl;
+                return std::nullopt;
+            }
+            if (std::abs(joint_radian - origin_joint_radians[i]) > d_->max_degree_delta) {
+                std::cout << "Warning: larger than joint max change delta" << std::endl;
+                return std::nullopt;
+            }
+            res.push_back(joint_radian);
         }
         return res;
     }

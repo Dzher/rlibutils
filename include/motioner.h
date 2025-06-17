@@ -18,6 +18,8 @@ public:
 
     bool isValid() const;
     void setDuration(long long ms);
+    void setJointMaxDegree(double max_degree);
+    void setJointMaxDegreeDelta(double max_degree_delta);
 
     int getDof() const;
     int getOperationDof() const;
