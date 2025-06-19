@@ -41,11 +41,11 @@ struct RLIB_API Quaternion {
     double qz = 0.0;
 };
 
+// this euler is left-hand axis
 struct RLIB_API Euler {
-    // cba-012-XYZ-RPY
-    double c = 1.0; // roll-X-c-0
-    double b = 0.0; // pitch-Y-b-1
-    double a = 0.0; // yaw-Z-a-2
+    double c = 1.0; // c-Z-Roll-2
+    double b = 0.0; // b-Y-Yaw(Pan)-1
+    double a = 0.0; // a-X-Pitch(Tilt)-0
 };
 
 struct RLIB_API xyzWithQuaternion {

@@ -81,7 +81,7 @@ xyzWithEuler ModelUtils::rlTransform2XyzEuler(const rl::math::Transform& in)
     res.position({ t.x(), t.y(), t.z() });
 
     Eigen::Matrix3d rotation = in.linear();
-    Eigen::Vector3d euler = rotation.eulerAngles(2, 1, 0); // cba-012-ZYX-[Yaw-Potch-Roll] 顺序
+    Eigen::Vector3d euler = rotation.eulerAngles(2, 1, 0);
     res.euler.c = euler[0];
     res.euler.b = euler[1];
     res.euler.a = euler[2];

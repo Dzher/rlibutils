@@ -66,7 +66,7 @@ Motioner::Motioner(ModelType type, const std::string& model_dir, InverseMethod m
     } else {
         d_->ik = std::make_unique<rl::mdl::NloptInverseKinematics>(kin_model.get());
     }
-    d_->ik->setDuration(std::chrono::milliseconds(250));
+    d_->ik->setDuration(std::chrono::milliseconds(100));
 }
 
 Motioner::Motioner(const Motioner& other)
